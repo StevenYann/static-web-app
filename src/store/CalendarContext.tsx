@@ -13,8 +13,6 @@ interface CalendarStoreValue {
   dayClickCount: number
   selectedDate: undefined | string
   toggleBarOnDateClick: (num: number, date?: any) => void
-  toggleGrid: boolean
-  setToggleGrid: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const useCalendarContext = () => {
@@ -32,7 +30,6 @@ const CalendarStore = ({ children }: any) => {
   const [selectedDate, setSelectedDate] = useState<undefined | string>(
     undefined
   )
-  const [toggleGrid, setToggleGrid] = useState(true)
 
   const changeView = (date?: Date) => {
     setYearView(!yearView)
@@ -53,9 +50,7 @@ const CalendarStore = ({ children }: any) => {
     changeView: changeView,
     dayClickCount: dayClickCount,
     selectedDate: selectedDate,
-    toggleBarOnDateClick: toggleBarOnDateClick,
-    toggleGrid: toggleGrid,
-    setToggleGrid: setToggleGrid
+    toggleBarOnDateClick: toggleBarOnDateClick
   }
 
   return (

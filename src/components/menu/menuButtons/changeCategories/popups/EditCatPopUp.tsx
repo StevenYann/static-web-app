@@ -68,7 +68,7 @@ const EditCatPopUp = (props: any) => {
   ) {
     let payload: Category = {
       category_id: props.category.category_id,
-      category_name: category_name.trim(),
+      category_name: category_name,
       icon: icon,
       color: color
     }
@@ -121,7 +121,7 @@ const EditCatPopUp = (props: any) => {
   function AddCategoryButton() {
     return (
       <Button
-        disabled={clicked || props.name.toLowerCase() === ''}
+        disabled={clicked}
         className="menu-button"
         size="medium"
         variant="contained"

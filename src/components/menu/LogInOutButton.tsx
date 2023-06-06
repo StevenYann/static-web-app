@@ -35,6 +35,7 @@ const LogInOutButton = () => {
   const { inProgress } = useMsal()
   const isAuthenticated = useIsAuthenticated()
 
+  console.log('is logged in: ', isAuthenticated)
   if (isAuthenticated) {
     return <LogoutButton />
   } else if (
@@ -43,7 +44,7 @@ const LogInOutButton = () => {
   ) {
     return <LoginButton />
   } else {
-    return null
+    return <></>
   }
 }
 

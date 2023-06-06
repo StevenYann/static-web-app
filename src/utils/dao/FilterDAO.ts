@@ -12,7 +12,7 @@ export class FilterDAO {
     SELECT category_id 
     FROM calendar.category_filter
     WHERE user_id = 
-      (SELECT id 
+      (SELECT user_id 
        FROM calendar.app_user 
        WHERE active_directory_oid = '${oid}')`
     const resultset = await this.db.ConnectAndQuery(query)
@@ -23,7 +23,7 @@ export class FilterDAO {
     let delQuery = `
     DELETE FROM calendar.category_filter     
     WHERE user_id = 
-    (SELECT id 
+    (SELECT user_id 
      FROM calendar.app_user 
      WHERE active_directory_oid = '${oid}')`
     await this.db.ConnectAndQuery(delQuery)

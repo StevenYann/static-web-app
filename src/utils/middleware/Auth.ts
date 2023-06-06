@@ -3,9 +3,9 @@ import { decode, JwtPayload, verify } from 'jsonwebtoken'
 import { JwksClient } from 'jwks-rsa'
 import { label, Middleware } from 'next-api-middleware'
 
-const jwksUri = `https://${process.env.AZURE_AD_B2C_TENANT_NAME}.b2clogin.com/${process.env.AZURE_AD_B2C_TENANT_NAME}.onmicrosoft.com/${process.env.AZURE_AD_B2C_PRIMARY_USER_FLOW}/discovery/v2.0/keys`
-
-const client = new JwksClient({ jwksUri })
+const client = new JwksClient({
+  jwksUri: `https://${process.env.AZURE_AD_B2C_TENANT_NAME}.b2clogin.com/${process.env.AZURE_AD_B2C_TENANT_NAME}.onmicrosoft.com/${process.env.AZURE_AD_B2C_PRIMARY_USER_FLOW}/discovery/v2.0/keys`
+})
 
 export const AdminAction = async (
   req: NextApiRequest,
@@ -84,29 +84,25 @@ const authenticate: Middleware = async (
       throw new Error('Missing bearer token')
     }
 
+    const foo = req.headers['X-Custom-Authorization']
+
     let idToken = req.headers.authorization!.substring(7)
 
     const parsed = decode(idToken, { complete: true })
 
     let kid = parsed?.header.kid
     if (!kid) {
-      try {
-        const customAuthorization = req.headers['X-Custom-Authorization']
-        idToken = (customAuthorization as string).substring(7)
+      idToken = (foo as string).substring(7)
 
-        const parsed = decode(idToken, { complete: true })
+      const parsed = decode(idToken, { complete: true })
 
-        kid = parsed!.header.kid
-      } catch {
-        throw new Error(`Failed to find kid in headers: ${req.headers}`)
-      }
+      kid = parsed?.header.kid
     }
 
     let signingKey = await getSigningKeyPromise(kid!, client)
 
     const decodedAndVerified = verify(idToken, signingKey, {
-      ignoreNotBefore: true,
-      ignoreExpiration: process.env.NODE_ENV === 'test'
+      ignoreNotBefore: true
     }) as JwtPayload
 
     if (decodedAndVerified.aud !== process.env.AZURE_AD_B2C_CLIENT_ID) {

@@ -1,5 +1,6 @@
 import { DatabaseConnector } from '../DatabaseConnector'
 import { Category } from '@/interfaces/Category'
+import { DatabaseError } from '@/exceptions/DatabaseError'
 
 export class CategoryDAO {
   db: DatabaseConnector
@@ -13,7 +14,8 @@ export class CategoryDAO {
     try {
       await this.db.ConnectAndQuery(query)
     } catch (err: any) {
-      throw err
+      console.log(err)
+      throw new DatabaseError(err.msg)
     }
   }
 
@@ -23,7 +25,7 @@ export class CategoryDAO {
       const resultset = await this.db.ConnectAndQuery(query)
       return resultset.recordset
     } catch (err: any) {
-      throw err
+      throw new DatabaseError(err.msg)
     }
   }
 
@@ -38,7 +40,7 @@ export class CategoryDAO {
     try {
       await this.db.ConnectAndQuery(query)
     } catch (err: any) {
-      throw err
+      throw new DatabaseError(err.msg)
     }
   }
 
@@ -47,7 +49,7 @@ export class CategoryDAO {
     try {
       await this.db.ConnectAndQuery(query)
     } catch (err: any) {
-      throw err
+      throw new DatabaseError(err.msg)
     }
   }
 }

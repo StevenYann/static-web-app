@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Typography, Button } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useCalendarContext } from '@/store/CalendarContext'
@@ -27,10 +27,10 @@ let IconList: IconItems[] = []
 
 const Day = (props: DayProps) => {
   const [iconSet, setIconSet] = useState(IconList)
-  const { isYearView, currentDate, toggleGrid } = useCalendarContext()
+  const { isYearView, currentDate } = useCalendarContext()
   const { events, selected, categories, updateCats } = useAPIContext()
 
-  useEffect(() => {
+  useMemo(() => {
     IconList = []
     if (events.length > 0 && selected.length > 0) {
       for (let j = 0; j < events.length; j++) {
@@ -297,10 +297,8 @@ const Day = (props: DayProps) => {
     <Grid
       sx={{ height: 'auto' }}
       xs={1}
-      borderRight={!isYearView || (toggleGrid && isYearView) ? 1 : 0}
-      borderBottom={!isYearView || (toggleGrid && isYearView) ? 1 : 0}
-      borderTop={toggleGrid && isYearView ? 1 : 0}
-      borderLeft={toggleGrid && isYearView ? 1 : 0}
+      borderRight={isYearView ? 0 : 1}
+      borderBottom={isYearView ? 0 : 1}
       display="flex"
       justifyContent="center"
       alignItems="top"
@@ -321,4 +319,5 @@ const Day = (props: DayProps) => {
     </Grid>
   )
 }
+
 export default Day
