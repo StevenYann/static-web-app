@@ -1,17 +1,16 @@
 import {
   Badge,
-  ClickAwayListener,
   List,
-  Popper,
   Stack,
   Typography
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import CloseIcon from '@mui/icons-material/Close'
 import { APIManager } from '@/utils/APIManager'
-import { Alert } from '@/interfaces/Alert'
 import { Button } from '@mui/material/'
+import useAlerts from './UseAlerts'
+import Menu from '../menu/Menu'
 
 const defaultColour = 'rgb(137,137,137)'
 const fontColour = 'rgb(90,90,90)'
@@ -24,8 +23,8 @@ const logNotificationsChecked = () => {
 
 const AlertButton = () => {
   const [alertsChecked, setAlertsChecked] = useState<boolean>(false)
-  const [hasAlerts, setHasAlerts] = useState<boolean>(false)
   const [panelAnchor, setPanelAnchor] = useState<null | HTMLElement>(null)
+  const [alerts, setAlerts, hasAlerts, removeAlerts] = useAlerts()
 
   const handleClick = (event: any) => {
     panelAnchor ? setPanelAnchor(null) : setPanelAnchor(event.currentTarget)
@@ -46,10 +45,11 @@ const AlertButton = () => {
       >
         <NotificationsIcon color="action" />
         <AlertPanel
-          hasAlerts={hasAlerts}
-          setHasAlerts={setHasAlerts}
           panelAnchor={panelAnchor}
           onClickAway={handleClick}
+          alerts={alerts}
+          setAlerts={setAlerts}
+          removeAlerts={removeAlerts}
         />
       </Badge>
     </Button>
@@ -57,7 +57,14 @@ const AlertButton = () => {
 }
 
 const AlertPanel = (props: any) => {
-  const [alerts, setAlerts] = useState<Alert[]>([])
+  const {
+    hasAlerts,
+    panelAnchor,
+    onClickAway,
+    alerts,
+    removeAlerts,
+  } = props
+  
   const alertPanelStyle = {
     bgcolor: 'white',
     color: 'black',
@@ -68,54 +75,40 @@ const AlertPanel = (props: any) => {
     boxShadow: '0 0 5px #ccc'
   }
 
-  useEffect(() => {
-    APIManager.getInstance()
-      .then((instance) => instance.getNotification())
-      .then((data) => data.result)
-      .then((result) => {
-        if (result.length > 0) {
-          setAlerts(result)
-          props.setHasAlerts(true)
-        }
-      })
-  }, [])
-
   const renderAlerts = () => {
     const alertItems = []
     for (const alert of alerts) {
-      const handleClick = () => {
-        var index = alerts.indexOf(alert)
-        if (index > -1) {
-          alerts.splice(index, 1)
-          setAlerts([...alerts])
-        }
-        if (alerts.length == 0) props.setHasAlerts(false)
-      }
       alertItems.push(
-        <AlertItem key={alert} alert={alert} handleClick={handleClick} />
+        <AlertItem key={alert} alert={alert} handleClick={removeAlerts} />
       )
     }
     return alertItems.reverse()
   }
 
+  if (hasAlerts) {
+    return (
+      <Menu
+        panelAnchor={panelAnchor}
+        onClickAway={onClickAway}
+        sx={{ bgcolor: 'white', width: { sm: '300px', md: '400px' } }}
+      >
+        <List style={alertPanelStyle}>
+          {renderAlerts()}
+        </List>
+      </Menu>
+    )
+  }
+
   return (
-    <Popper
-      open={Boolean(props.panelAnchor)}
-      anchorEl={props.panelAnchor}
+    <Menu
+      panelAnchor={panelAnchor}
+      onClickAway={onClickAway}
       sx={{ bgcolor: 'white', width: { sm: '300px', md: '400px' } }}
     >
-      <ClickAwayListener onClickAway={props.onClickAway}>
-        <List style={alertPanelStyle}>
-          {props.hasAlerts ? (
-            renderAlerts()
-          ) : (
-            <Typography color={fontColour} align="center">
-              No alerts at this time.
-            </Typography>
-          )}
-        </List>
-      </ClickAwayListener>
-    </Popper>
+      <Typography color={fontColour} align="center">
+        No alerts at this time.
+      </Typography>
+    </Menu>
   )
 }
 

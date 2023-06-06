@@ -10,6 +10,7 @@ import AddAdmin from '@/components/menu/menuButtons/editAdmins/AddAdmin'
 import RemoveAdmin from '@/components/menu/menuButtons/editAdmins/RemoveAdmin'
 import AddNewCategory from '@/components/menu/menuButtons/changeCategories/AddNewCategory'
 import EditCategory from '@/components/menu/menuButtons/changeCategories/EditCategory'
+import Menu from './Menu'
 
 const RightMenu = (props: any) => {
   // menu state to select which menu to show
@@ -41,25 +42,22 @@ const RightMenu = (props: any) => {
   }
 
   return (
-    <Popper
-      open={Boolean(props.panelAnchor)}
-      anchorEl={props.panelAnchor}
+    <Menu 
+      panelAnchor={props.panelAnchor}
+      onClickAway={handleClickAway}
       sx={{
         height: 'calc(100vh - 64px)',
         bgcolor: 'white',
-        zIndex: (theme) => theme.zIndex.drawer + 2
+        zIndex: (theme: { zIndex: { drawer: number } }) => theme.zIndex.drawer + 2
       }}
-      modifiers={[
-        {
-          name: 'offset',
-          options: {
-            offset: [0, 20]
-          }
+      modifiers={[{
+        name: 'offset',
+        options: {
+          offset: [0, 20]
         }
-      ]}
+      }]}
     >
-      <ClickAwayListener onClickAway={handleClickAway}>
-        <Stack style={rightMenuStyle}>
+      <Stack style={rightMenuStyle}>
           {/*Render the menu bar items here*/}
           {props.menuState === 0 ? (
             <MainMenuItems
@@ -122,8 +120,7 @@ const RightMenu = (props: any) => {
             />
           ) : null}
         </Stack>
-      </ClickAwayListener>
-    </Popper>
+    </Menu>
   )
 }
 
